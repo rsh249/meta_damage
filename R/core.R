@@ -3,8 +3,13 @@
 # set up path to data 
 # set up path to reference
 source('R/paths.R')
+# fastq-dump example: 
+#fastq-dump SRR7774477
+
+
 # Consider overlapping reads and filtering for replicates before aligning with bwa
 
+#Quality control: low quality, adapter trimming, duplicates
 
 # align with bwa
 index_bwa = paste('bwa index', ref)
@@ -18,13 +23,13 @@ system(run_bwa) # run alignment
 run_samtools = paste(
 'samtools view -S -b align.sam > align.bam \n
 samtools view -b -F4 align.bam > align.final.bam \n
-samtools sort align.final.bam >align.sort.bam \n
+samtools sort align.final.bam > align.sort.bam \n
 samtools index align.sort.bam \n')
 system(run_samtools)
 
 #### Set paths
 
-#git clone https://github.com/rsh249/PMDtools #python3 compatible code?
+system('git clone https://github.com/rsh249/PMDtools') #python3 compatible code?
 
 #pmdtools deamination mapping
 # run_pmdtools = paste('samtools calmd -b align.sort.bam', ref, '| samtools view -h - | python3 ../PMDtools/pmdtools.0.60.py --threshold 0 --header --deamination --range 125 --CpG > out.CpG')
@@ -32,6 +37,8 @@ system(run_samtools)
 run_pmdtools2 = paste('samtools view -h align.sort.bam | python3 ../PMDtools/pmdtools.0.60.py --deamination --range 125 > out2.deam') #as in Moore etal. 2020
 system(run_pmdtools2)
 
+
+#### FILTERING ######
 #pmdtools filtering on PMD score 0
 run_pmdtools_filter = paste('samtools view -h align.sort.bam | python3 ../PMDtools/pmdtools.0.60.py --threshold 0 --header | samtools view -Sb - > filter.bam') 
 system(run_pmdtools_filter)
