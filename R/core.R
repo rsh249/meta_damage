@@ -3,13 +3,30 @@
 # set up path to data 
 # set up path to reference
 source('R/paths.R')
+
+# other ways of downloading packrat midden data
+# on the command line/terminal
+# fastq-dump SRR7774472
+# system('fastq-dump SRR7774472')
+
+# is there an R solution using NCBI Entrez tools or sratoolkit?
+
+
+# getting the reference data
+# ftp://ftp.ncbi.nlm.nih.gov/
+download.file('ftp://ftp.ncbi.nlm.nih.gov/refseq/release/mitochondrion/mitochondrion.2.1.genomic.fna.gz',
+              'mito_reference.fna.gz')
+ref = 'mito_reference.fna.gz' # might have to unzip with gunzip
+
+
+
 # Consider overlapping reads and filtering for replicates before aligning with bwa
 
 
 # align with bwa
 index_bwa = paste('bwa index', ref)
 system(index_bwa) # index reference
-run_bwa = paste('bwa mem -Y -I 0 -L 1024 -E 7 -t 16', ref, data, '> align.sam')
+run_bwa = paste('bwa mem -Y -I 0 -L 1024 -E 7 -t 32', ref, data, '> align.sam')
 system(run_bwa) # run alignment
 
 
@@ -55,6 +72,7 @@ ggplot(avgscores) +
   theme_linedraw() +
   xlab('Quality Score') +
   ggtitle('Per Read Average Quality')
+
 
 # overlap reads and plot length distribution
 
