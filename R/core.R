@@ -1,7 +1,18 @@
 # R Script to Align Sequence Reads to Reference Database and Identify Ancient DNA Damage Patterns 
 
-# Set Up Path to Data 
 system('fastq-dump SRR7774472')    #### is there an R solution using NCBI Entrez tools or sratoolkit?
+
+# set up path to data 
+# set up path to reference
+source('R/paths.R')
+
+# other ways of downloading packrat midden data
+# on the command line/terminal
+# fastq-dump example: 
+# fastq-dump SRR7774472
+# system('fastq-dump SRR7774472')
+
+# is there an R solution using NCBI Entrez tools or sratoolkit?
 
 # Getting the Reference Data
 download.file('http://ftp.ncbi.nlm.nih.gov/refseq/release/mitochondrion/mitochondrion.2.1.genomic.fna.gz', 'mito_reference.fna.gz')
@@ -11,8 +22,9 @@ data='SRR7774472.fastq'
 # Alignment with BWA
 index_bwa = paste('bwa index', ref)
 system(index_bwa) # index reference
-run_bwa = paste('bwa mem -Y -I 0 -L 1024 -E 7 -t 32', ref, data, '> align.sam') 
-system(run_bwa) #Runs Alignment
+
+run_bwa = paste('bwa mem -Y -I 0 -L 1024 -E 7 -t 32', ref, data, '> align.sam')
+system(run_bwa) # run alignment
 
 #Samtools Index and Convert
 run_samtools = paste(
@@ -71,7 +83,6 @@ ggplot(avgscores) +
   theme_linedraw() +
   xlab('Quality Score') +
   ggtitle('Per Read Average Quality')
-
 
 #overlap reads and plot length distribution
 #out2.deam
